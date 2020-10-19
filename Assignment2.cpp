@@ -11,12 +11,12 @@ sem_t empty;
 sem_t mutex;
 sem_t full;
 
-int buffer[3] = {0,0,0};
+int milk[3] = {0,0,0};
 int write_idx = 0;
 int read_idx = 0;
 const int N = 3;
 
-void *thread_producer(void* arg) {
+void *milk_producer(void* arg) {
     //produce some data
     int i, j, total;
 
@@ -31,7 +31,7 @@ void *thread_producer(void* arg) {
 
         // critical section
 
-        buffer[write_idx] = total;
+        milk[write_idx] = total;
         write_idx++;
         if (write_idx == N)
             write_idx = write_idx % N;
@@ -41,7 +41,7 @@ void *thread_producer(void* arg) {
     }
 }
 
-void *thread_consumer(void* arg) {
+void *cheese_producer(void* arg) {
     int i;
 
     for (i = 0; i < 3; ++i) {
@@ -49,7 +49,7 @@ void *thread_consumer(void* arg) {
         sem_wait(&full);
         sem_wait(&mutex);
 
-        cout << "counter: " << buffer[read_idx] << read_idx;
+        cout << "counter: " << milk[read_idx] << read_idx;
         ++read_idx;
         if (read_idx == N)
             read_idx = read_idx % N;
@@ -69,11 +69,11 @@ int main() {
     pthread_t t_p1, t_p2, t_p3;
     pthread_t t_c1, t_c2;
 
-    pthread_create(&t_p1, NULL, thread_producer, (void*)&limits[0]);
-    pthread_create(&t_p2, NULL, thread_producer, (void*)&limits[1]);
-    pthread_create(&t_p3, NULL, thread_producer, (void*)&limits[2]);
-    pthread_create(&t_c1, NULL, thread_consumer, NULL);
-    pthread_create(&t_p1, NULL, thread_consumer, NULL);
+    pthread_create(&t_p1, NULL, milk_producer, (void*)&limits[0]);
+    pthread_create(&t_p2, NULL, milk_producer, (void*)&limits[1]);
+    pthread_create(&t_p3, NULL, milk_producer, (void*)&limits[2]);
+    pthread_create(&t_c1, NULL, cheese_producer, NULL);
+    pthread_create(&t_p1, NULL, cheese_producer, NULL);
 
     sleep(2);
 
